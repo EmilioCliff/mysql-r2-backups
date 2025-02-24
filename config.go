@@ -9,7 +9,6 @@ import (
 type Config struct {
 	CLOUD_FLARE_ACCESS_KEY_ID string `mapstructure:"CLOUD_FLARE_ACCESS_KEY_ID"`
 	CLOUD_FLARE_SECRET_ACCESS_KEY string `mapstructure:"CLOUD_FLARE_SECRET_ACCESS_KEY"`
-	CLOUD_FLARE_TOKEN string `mapstructure:"CLOUD_FLARE_TOKEN"`
 	CLOUD_FLARE_R2_BUCKET string `mapstructure:"CLOUD_FLARE_R2_BUCKET"`
 	CLOUD_FLARE_R2_REGION string `mapstructure:"CLOUD_FLARE_R2_REGION"`
 	CLOUD_FLARE_R2_ENDPOINT string `mapstructure:"CLOUD_FLARE_R2_ENDPOINT"`
@@ -53,5 +52,17 @@ func setDefaults() {
 	viper.SetDefault("CLOUD_FLARE_ACCESS_KEY_ID", "")
 	viper.SetDefault("CLOUD_FLARE_SECRET_ACCESS_KEY", "")
 	viper.SetDefault("CLOUD_FLARE_R2_BUCKET", "")
-	viper.SetDefault("CLOUD_FLARE_R2_REGION", "")
+	viper.SetDefault("CLOUD_FLARE_R2_REGION", "auto")
+	viper.SetDefault("CLOUD_FLARE_R2_ENDPOINT", "")
+	viper.SetDefault("BACKUP_DATABASE_URL", "")
+	viper.SetDefault("BACKUP_DATABASE_PASSWORD", "")
+	viper.SetDefault("BACKUP_DATABASE_USER", "")
+	viper.SetDefault("BACKUP_DATABASE_HOST", "")
+	viper.SetDefault("BACKUP_DATABASE_PORT", "3306")
+	viper.SetDefault("BACKUP_DATABASE_NAME", "")
+	viper.SetDefault("BACKUP_CRON_SCHEDULE", "0 0 3 * * *")
+	viper.SetDefault("RUN_ON_STARTUP", true)
+	viper.SetDefault("SINGLE_SHOT_MODE", false)
+	viper.SetDefault("BACKUP_FILE_PREFIX", "snapshot")
+	viper.SetDefault("BUCKET_SUBFOLDER", "snapshots")
 }
