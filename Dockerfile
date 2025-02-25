@@ -8,7 +8,7 @@ RUN go build -o main .
 FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=builder /app/main .
-COPY --from=builder /app/config.env .
+# COPY --from=builder /app/config.env .
 RUN apt update && apt install -y \
     mysql-client-core-8.0
 
