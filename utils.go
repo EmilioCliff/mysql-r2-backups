@@ -19,7 +19,7 @@ import (
 )
 
 type BackupServiceI interface {
-	uploadToS3(ctx context.Context, name, path string) error
+	uploadToR2(ctx context.Context, name, path string) error
 	dumpToFile(filepath string) (string, error) 
 	deleteFile(compressedFilePath string) error
 }
@@ -34,7 +34,7 @@ func NewBackUpService(config Config) BackupServiceI {
 	}
 }
 
-func (b *BackupService) uploadToS3(ctx context.Context, name, path string) error {
+func (b *BackupService) uploadToR2(ctx context.Context, name, path string) error {
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(b.config.CLOUD_FLARE_ACCESS_KEY_ID, b.config.CLOUD_FLARE_SECRET_ACCESS_KEY, "")),
 		config.WithRegion(b.config.CLOUD_FLARE_R2_REGION),

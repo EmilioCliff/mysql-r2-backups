@@ -60,7 +60,6 @@ func runBackup(config Config) {
 	currentDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal("error getting working dir: %w", err)
-		return
 	}
 
 	timestamp := time.Now().Format("2006-01-02_15-04-05")
@@ -73,7 +72,7 @@ func runBackup(config Config) {
 		log.Fatal(err)
 	}
 
-	if err := backup.uploadToS3(ctx, fmt.Sprintf("%s.gz", filename), backupFilePath); err != nil {
+	if err := backup.uploadToR2(ctx, fmt.Sprintf("%s.gz", filename), backupFilePath); err != nil {
 		log.Fatal(err)
 	}
 
