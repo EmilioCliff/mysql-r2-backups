@@ -42,4 +42,4 @@ The application is configured using the following environment variables:
 
 ## Blog
 
-You can find a blog on how to set up at [Automatic MySQL Backups](https://emiliocliff.com)
+You can find a blog on how to set up at [Automatic MySQL Backups](https://www.emiliocliff.com/blogs/automating-mysql-backups-to-cloudflare-r2)
