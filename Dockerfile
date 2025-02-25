@@ -10,6 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=builder /app/main .
 # COPY --from=builder /app/config.env .
 RUN apt update && apt install -y \
-    mysql-client-core-8.0
+    mysql-client-core-8.0 \
+    ca-certificates
 
 CMD ["./main"]

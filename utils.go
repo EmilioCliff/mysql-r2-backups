@@ -38,6 +38,7 @@ func (b *BackupService) uploadToS3(ctx context.Context, name, path string) error
 	cfg, err := config.LoadDefaultConfig(ctx,
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(b.config.CLOUD_FLARE_ACCESS_KEY_ID, b.config.CLOUD_FLARE_SECRET_ACCESS_KEY, "")),
 		config.WithRegion(b.config.CLOUD_FLARE_R2_REGION),
+		config.WithRetryMaxAttempts(5),
 	)
 	if err != nil {
 		return err
@@ -77,10 +78,10 @@ func (b *BackupService) uploadToS3(ctx context.Context, name, path string) error
 			if err != nil {
 				log.Printf("Failed attempt to wait for object %s to exist.\n", name)
 			}
+			log.Println("Upload successful")
 		}
 	}
 
-	log.Println("Upload successful")
 	return err
 }
 
