@@ -23,7 +23,7 @@ func main() {
 	}
 	log.Println("config loaded successfuly")
 
-	if (config.RUN_ON_STARTUP || config.SINGLE_SHOT_MODE) {
+	if config.RUN_ON_STARTUP || config.SINGLE_SHOT_MODE {
 		runBackup(config)
 
 		if config.SINGLE_SHOT_MODE {
@@ -34,7 +34,7 @@ func main() {
 	}
 
 	c := cron.New()
-	if err := c.AddFunc(config.BACKUP_CRON_SCHEDULE, func() {runBackup(config) }); err != nil {
+	if err := c.AddFunc(config.BACKUP_CRON_SCHEDULE, func() { runBackup(config) }); err != nil {
 		log.Fatal("error adding cron func: %w", err)
 	}
 
@@ -67,7 +67,7 @@ func runBackup(config Config) {
 	filename = filename + "_" + timestamp + ".sql"
 	filePath := filepath.Join(currentDir, filename)
 
-	backupFilePath, err := backup.dumpToFile(filePath); 
+	backupFilePath, err := backup.dumpToFile(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
