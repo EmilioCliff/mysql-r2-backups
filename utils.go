@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -20,7 +19,7 @@ import (
 
 type BackupServiceI interface {
 	uploadToR2(ctx context.Context, name, path string) error
-	dumpToFile(filepath string) (string, error) 
+	dumpToFile(filepath string) (string, error)
 	deleteFile(compressedFilePath string) error
 }
 
@@ -35,8 +34,15 @@ func NewBackUpService(config Config) BackupServiceI {
 }
 
 func (b *BackupService) uploadToR2(ctx context.Context, name, path string) error {
-	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(b.config.CLOUD_FLARE_ACCESS_KEY_ID, b.config.CLOUD_FLARE_SECRET_ACCESS_KEY, "")),
+	cfg, err := config.LoadDefaultConfig(
+		ctx,
+		config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider(
+				b.config.CLOUD_FLARE_ACCESS_KEY_ID,
+				b.config.CLOUD_FLARE_SECRET_ACCESS_KEY,
+				"",
+			),
+		),
 		config.WithRegion(b.config.CLOUD_FLARE_R2_REGION),
 		config.WithRetryMaxAttempts(5),
 	)
@@ -45,11 +51,11 @@ func (b *BackupService) uploadToR2(ctx context.Context, name, path string) error
 	}
 
 	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
-		o.BaseEndpoint = aws.String(b.config.CLOUD_FLARE_R2_ENDPOINT)
+		// o.BaseEndpoint = aws.String(b.config.CLOUD_FLARE_R2_ENDPOINT)
 	})
 
-	if (b.config.BUCKET_SUBFOLDER != "") {
-		name = b.config.BUCKET_SUBFOLDER + "/" + name;
+	if b.config.BUCKET_SUBFOLDER != "" {
+		name = b.config.BUCKET_SUBFOLDER + "/" + name
 	}
 
 	file, err := os.Open(path)
@@ -70,16 +76,18 @@ func (b *BackupService) uploadToR2(ctx context.Context, name, path string) error
 					"or the multipart upload API (5TB max).", b.config.CLOUD_FLARE_R2_BUCKET)
 			} else {
 				log.Printf("Couldn't upload file %v to %v:%v. Here's why: %v\n",
-				path, b.config.CLOUD_FLARE_R2_BUCKET, name, err)
+					path, b.config.CLOUD_FLARE_R2_BUCKET, name, err)
 			}
-		} else {
-			err = s3.NewObjectExistsWaiter(client).Wait(
-				ctx, &s3.HeadObjectInput{Bucket: aws.String(b.config.CLOUD_FLARE_R2_BUCKET), Key: aws.String(name)}, time.Minute)
-			if err != nil {
-				log.Printf("Failed attempt to wait for object %s to exist.\n", name)
-			}
-			log.Println("Upload successful")
 		}
+		// } else {
+		// 	err = s3.NewObjectExistsWaiter(client).Wait(
+		// 		ctx, &s3.HeadObjectInput{Bucket: aws.String(b.config.CLOUD_FLARE_R2_BUCKET), Key:
+		// aws.String(name)}, time.Minute)
+		// 	if err != nil {
+		// 		log.Printf("Failed attempt to wait for object %s to exist.\n", name)
+		// 	}
+		// 	log.Println("Upload successful")
+		// }
 	}
 
 	return err
@@ -92,7 +100,12 @@ func (b *BackupService) dumpToFile(filepath string) (string, error) {
 		"sh", "-c",
 		fmt.Sprintf(
 			"MYSQL_PWD=%s mysqldump --single-transaction --protocol=TCP --add-drop-table --quick --lock-tables=false --user=%s --host=%s --port=%s %s | gzip > %s",
-			b.config.BACKUP_DATABASE_PASSWORD, b.config.BACKUP_DATABASE_USER, b.config.BACKUP_DATABASE_HOST, b.config.BACKUP_DATABASE_PORT, b.config.BACKUP_DATABASE_NAME, compressedFilePath,
+			b.config.BACKUP_DATABASE_PASSWORD,
+			b.config.BACKUP_DATABASE_USER,
+			b.config.BACKUP_DATABASE_HOST,
+			b.config.BACKUP_DATABASE_PORT,
+			b.config.BACKUP_DATABASE_NAME,
+			compressedFilePath,
 		),
 	)
 
@@ -138,4 +151,3 @@ func compressFile(source, target string) error {
 	_, err = io.Copy(gzipWriter, inFile)
 	return err
 }
-
